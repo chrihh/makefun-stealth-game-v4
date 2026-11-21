@@ -66,6 +66,14 @@ export function draw(ctx, w, opts = {}) {
       if (ch === '=' && !submerged) {
         ctx.fillStyle = 'rgba(20,26,20,0.25)';
         ctx.fillRect(px, py + TILE - 6, TILE, 3);
+        // the causeway frets white as the flood approaches, so a
+        // runner mid-crossing can read how long the way stays open
+        const phase = tidePhaseAt(w.time);
+        if (phase > 0.26 && phase < 0.38) {
+          const pulse = 0.35 + 0.3 * Math.sin(w.time * 7 + x);
+          ctx.fillStyle = `rgba(235,250,255,${pulse})`;
+          ctx.fillRect(px, py + 3, TILE, 3);
+        }
       }
     } else {
       ctx.fillStyle = (x + y) % 2 ? PALETTE.floor : PALETTE.floorAlt;
@@ -201,19 +209,24 @@ function drawHud(ctx, w) {
   ctx.fillStyle = '#f2e3b3';
   ctx.font = 'bold 17px system-ui';
   ctx.textAlign = 'left';
-  ctx.fillText(`${w.level.name} — ${w.level.sub}`, 14, 26);
+  ctx.fillText(w.level.name, 14, 26);
+  ctx.fillStyle = '#9db4bd';
+  ctx.font = '14px system-ui';
+  ctx.fillText(w.level.sub, 14 + ctx.measureText(w.level.name).width + 24, 26);
+  ctx.font = 'bold 17px system-ui';
   ctx.textAlign = 'right';
   ctx.fillStyle = '#e8f4f8';
   ctx.fillText(`Score ${w.score}`, VIEW_W - 14, 26);
 
-  // covers (spare oilskins), stones, key
+  // covers (spare oilskins), stones, key — set right of centre so a
+  // long floor name can never run into them
   ctx.textAlign = 'left';
   ctx.fillStyle = '#9fd8e8';
-  ctx.fillText(`Covers ${Math.max(0, w.covers + 1)}`, 470, 26);
+  ctx.fillText(`Covers ${Math.max(0, w.covers + 1)}`, 500, 26);
   ctx.fillStyle = '#d8b25a';
-  ctx.fillText(`Stones ${w.stones}`, 580, 26);
+  ctx.fillText(`Stones ${w.stones}`, 612, 26);
   ctx.fillStyle = w.key.taken ? '#39d353' : '#8a8378';
-  ctx.fillText(w.key.taken ? 'Lens key ✓' : 'Lens key —', 690, 26);
+  ctx.fillText(w.key.taken ? 'Lens key ✓' : 'Lens key —', 716, 26);
 
   // tide gauge: a phase bar; the red stretch is high water
   const tx = 830, tw = 150;

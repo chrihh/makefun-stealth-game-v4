@@ -3,7 +3,6 @@
 // page instead freezes one deterministic scene for screenshots.
 
 import { createWorld, stepWorld, retryLevel, EVENT_CAUGHT, EVENT_LEVEL_CLEAR, EVENT_GAME_CLEAR, EVENT_GAME_OVER } from './world.js';
-import { LEVELS } from './levels.js';
 import { draw } from './render.js';
 import { createInput } from './input.js';
 import { createAudio } from './audio.js';
